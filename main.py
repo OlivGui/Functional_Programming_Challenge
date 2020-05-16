@@ -19,11 +19,16 @@ records = [
 
 # Fee constants
 FIX_TAX = 0.36
-MINUTE_TAX = 0.09
+DAY_MINUTE_TAX = 0.09
+NIGHT_MINUTE_TAX = 0
 
 # Day fee
 def dayfee(start, end):
-    return FIX_TAX + (((end - start).seconds // 60) * MINUTE_TAX)
+    return FIX_TAX + (((end - start).seconds // 60) * DAY_MINUTE_TAX)
+
+# Night Fee
+def nightfee(start, end):
+    return FIX_TAX + (((end - start).seconds // 60) * NIGHT_MINUTE_TAX)    
 
 # Call cost
 def callfee(start, end):
@@ -33,12 +38,12 @@ def callfee(start, end):
     
     # Day tax
     if (start.hour > 6 and end.hour < 22):
-        return float(dayfee(start, end))
+        return dayfee(start, end)
     
     # Night tax
     if ((start.hour > 22 and end.hour > 22) or
        (start.hour < 6 and end.hour < 6)):
-        return FIX_TAX
+        return nightfee(start, end)
 
     # Mix tax
     else: 
@@ -49,7 +54,7 @@ def callfee(start, end):
         if (start.hour < 6):
             start = datetime(start.year, start.month, start.day, hour = 6)
             
-        mix_fee = dayfee(start, end) + FIX_TAX
+        mix_fee = dayfee(start, end) + nightfee(start, end)
         return mix_fee
     
 # Add 'cost' to the recods
