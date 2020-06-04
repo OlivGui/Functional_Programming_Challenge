@@ -24,5 +24,5 @@ def verify_signature(token):
     try:
         decoded_jwt = jwt.decode(token, secret, algorithm='HS256')
         return decoded_jwt
-    except:
+    except jwt.InvalidSignatureError:
         return error2
